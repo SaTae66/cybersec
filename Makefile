@@ -4,7 +4,7 @@ OBJ_DIR=obj
 
 # C compiler and compilation flags
 CC=gcc
-CFLAGS=-g -m32 -O0 -fno-stack-protector -no-pie
+CFLAGS=-g -m32 -O0 -fno-stack-protector -no-pie -D_FORTIFY_SOURCE=0 -z execstack
 
 # make sure SOURCES includes ALL source files required to compile the project
 SOURCES=main.c
