@@ -31,4 +31,4 @@ $(OBJ_DIR):
 -include $(DEPS)
 
 clean:
-	rm -rf $(OBJ_DIR) $(DEP_DIR)
+	rm -r $(OBJ_DIR) $(DEP_DIR)
