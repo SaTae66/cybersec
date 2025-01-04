@@ -1,7 +1,3 @@
-//
-// Created by mboegl on 12/28/24.
-//
-
 #define _GNU_SOURCE
 
 #include "main.h"
