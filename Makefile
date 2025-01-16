@@ -1,34 +1,31 @@
-# directories
+# use gcc as compiler
+CC=gcc
+# compiler flags passed to gcc
+CFLAGS=-g -m32 -O0 -fno-stack-protector -no-pie -D_FORTIFY_SOURCE=0 -z execstack
+
+# generalize Makefile by abstracting away common dirs
 SRC_DIR=src
 OBJ_DIR=obj
 
-# C compiler and compilation flags
-CC=gcc
-CFLAGS=-g -m32 -O0 -fno-stack-protector -no-pie -D_FORTIFY_SOURCE=0 -z execstack
+# get list of all source files in the source dir
+SRC = $(wildcard $(SRC_DIR)/*.c)
+# get the names of the source files without path prefix and type suffix
+TARGETS = $(patsubst $(SRC_DIR)/%.c,%,$(SRC))
 
-# make sure SOURCES includes ALL source files required to compile the project
-SOURCES=main.c
-TARGET=cybersec
+# all and clean are not file but rather functions
+.PHONY: all clean
 
-# derived variables
-OBJECTS=$(SOURCES:%.c=$(OBJ_DIR)/%.o)
-DEPS=$(SOURCES:%.c=$(DEP_DIR)/%.d)
+# keep object files (make removes intermediate files per default)
+.PRECIOUS: $(OBJ_DIR)/%.o
 
-all: $(TARGET)
+all: $(TARGETS)
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
+%: $(OBJ_DIR)/%.o
+	$(CC) $(CFLAGS) $< -o $@
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(DEP_DIR) $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(DEPFLAGS) -o $@ -c $<
-
-$(DEP_DIR):
-	@mkdir -p $(DEP_DIR)
-
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
-
--include $(DEPS)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -r $(OBJ_DIR) $(DEP_DIR)
+	rm -r $(OBJ_DIR) $(TARGETS)
