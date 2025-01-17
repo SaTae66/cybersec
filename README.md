@@ -15,3 +15,14 @@ buffer, thus the secret that is compared to the user input. By inputting the sam
 achieve matching contents for both buffers, which results in gaining access without the actual password. An example for
 this is the input `1234567812345678` so that each buffer contains `12345678` afterward and thus bypasses authentication.
 
+## nop_sled.c
+
+More advanced overflow with a single buffer on the stack, in another function. The overflow is again cause by the
+insecure function `gets()`. This time however we don't overwrite an adjacent buffer, but rather the metadata on the
+stack. We try to overwrite the stored address of the instruction that is supposed to be run next after the function
+returns. The new address we put there is somewhere at the beginning of our buffer. We start by filling our buffer with
+NOP instructions following the actual shell code (actual code we want to run; usually starting a shell, hence the name)
+and finally the already mentioned address. If we mange to layout everything like that, the function should on return not
+jump back to `main()` but somewhere close to the beginning of our buffer. If we are close enough some NOP's are
+executed (which allow us some margin for error with the address; hence this is called a NOP sled), followed by the
+shellcode. This will use the syscall `execve` to replace our current process with an instance of `/bin/sh`.
